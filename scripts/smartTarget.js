@@ -72,10 +72,12 @@ class SmartTarget {
     const height = token.h;
     const gridwidth = token.document.width;
     const gridheight = token.document.height;
+	const gridsize = canvas.dimensions.size; 
     const position = game.settings.get(SMARTTARGET_MODULE_NAME, "pipPosition")
     let circleR = game.settings.get(SMARTTARGET_MODULE_NAME, "pipScale") || 12;
-	circleR = circleR * ((gridwidth + gridheight) /2);
+	circleR = circleR * (((gridwidth + gridheight) / 2) * (gridsize / 100));
     let circleOffsetMult = game.settings.get(SMARTTARGET_MODULE_NAME, "pipOffset") || 16;
+	circleOffsetMult = circleOffsetMult * (((gridwidth + gridheight) / 2) * (gridsize / 100));
     let insidePip = game.settings.get(SMARTTARGET_MODULE_NAME, "insidePips") ? circleR : 0;
     const totalHeight = circleR*2;
     const totalWidth = (circleR*2)*length - circleOffsetMult*(length-1);
@@ -123,10 +125,9 @@ class SmartTarget {
     let color = Color.from(u.color);
     let circleR = game.settings.get(SMARTTARGET_MODULE_NAME, "pipScale") || 12;
 	circleR = circleR * (((gridwidth + gridheight) / 2) * (gridsize / 100));
-    let circleOffsetMult =
-      game.settings.get(SMARTTARGET_MODULE_NAME, "pipOffset") || 16;
-    let scaleMulti =
-      game.settings.get(SMARTTARGET_MODULE_NAME, "pipImgScale") || 1;
+    let circleOffsetMult = game.settings.get(SMARTTARGET_MODULE_NAME, "pipOffset") || 16;
+	circleOffsetMult = circleOffsetMult * (((gridwidth + gridheight) / 2) * (gridsize / 100));  
+    let scaleMulti = game.settings.get(SMARTTARGET_MODULE_NAME, "pipImgScale") || 1;
     let insidePip = game.settings.get(SMARTTARGET_MODULE_NAME, "insidePips")
       ? circleR
       : 0;
@@ -138,8 +139,8 @@ class SmartTarget {
       }
       if (character) {
         pTex = game.settings.get(SMARTTARGET_MODULE_NAME, "useToken")
-          ? character.prototypeToken.texture.src || character.img
-          : character.img || character.prototypeToken.texture.src;
+        ? character.prototypeToken.texture.src || character.img
+        : character.img || character.prototypeToken.texture.src;
       } else {
         pTex = u.avatar;
       }
