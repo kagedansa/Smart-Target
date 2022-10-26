@@ -116,12 +116,13 @@ class SmartTarget {
    * @param {int} i  -- the current row count
    * @param {token} target -- PIXI.js container for height & width (the token)
    */
-  static async buildCharacterPortrait(u, i, target, token, totalOffset) {
+  static buildCharacterPortrait(u, i, target, token, totalOffset) {
     const gridwidth = token.document.width;
     const gridheight = token.document.height;
+	const gridsize = canvas.dimensions.size; 
     let color = Color.from(u.color);
     let circleR = game.settings.get(SMARTTARGET_MODULE_NAME, "pipScale") || 12;
-	circleR = circleR * ((gridwidth + gridheight) /2);
+	circleR = circleR * (((gridwidth + gridheight) / 2) * (gridsize / 100));
     let circleOffsetMult =
       game.settings.get(SMARTTARGET_MODULE_NAME, "pipOffset") || 16;
     let scaleMulti =
@@ -145,9 +146,13 @@ class SmartTarget {
     }
     const gmTexSetting = game.settings.get(SMARTTARGET_MODULE_NAME, "useTokenGm")
     let gmTexture = gmTexSetting ? token.document.getFlag(SMARTTARGET_MODULE_NAME,"gmtargetimg") || u.avatar : u.avatar
+	function redraw(){
+      token._refreshTarget()
+    }
     let texture = u.isGM
-      ? await new PIXI.Texture.fromURL(gmTexture)
-      : await new PIXI.Texture.fromURL(pTex);
+      ? new PIXI.Texture.from(gmTexture)
+      : new PIXI.Texture.from(pTex);
+    if (!texture.baseTexture.valid) texture.once("update", redraw);
     let newTexW = scaleMulti * (2 * circleR);
     let newTexH = scaleMulti * (2 * circleR);
     let borderThic = game.settings.get(SMARTTARGET_MODULE_NAME, "borderThicc");
@@ -165,7 +170,7 @@ class SmartTarget {
       newTexW / 2 + 4 + i * circleOffsetMult + portraitXoffset + insidePip + totalOffset.x,
       newTexH / 2 + portraitCenterOffset + insidePip + totalOffset.y
     );
-    target
+    token.target
       .beginFill(color)
       .drawCircle(2 + i * circleOffsetMult + insidePip + totalOffset.x, 0 + insidePip + totalOffset.y, circleR)
       .beginTextureFill({
@@ -177,7 +182,7 @@ class SmartTarget {
       .drawCircle(2 + i * circleOffsetMult + insidePip + totalOffset.x, 0 + insidePip + totalOffset.y, circleR)
       .endFill()
       .lineStyle(borderThic / 2, color)
-      .drawCircle(2 + i * circleOffsetMult + insidePip + totalOffset.x, 0 + insidePip + totalOffset.y, circleR);
+      .drawCircle(2 + i * circleOffsetMult + insidePip + totalOffset.x, 0 + insidePip + totalOffset.y, circleR)
   }
 
   // Draw custom crosshair and pips
